@@ -1,0 +1,4 @@
+package stori
+
+func main() {
+}
