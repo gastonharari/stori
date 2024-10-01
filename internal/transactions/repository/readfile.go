@@ -21,6 +21,13 @@ func (r Repository) ReadFile(ctx context.Context, filename string) ([]domain.Tra
 	defer file.Close()
 
 	reader := csv.NewReader(file)
+	header, err := reader.Read()
+	if err != nil {
+		return nil, err
+	}
+	if header[0] != daos.HeaderID || header[1] != daos.HeaderDate || header[2] != daos.HeaderTransaction {
+		return nil, domain.ErrorInvalidHeader
+	}
 	records, err := reader.ReadAll()
 	if err != nil {
 		return nil, err

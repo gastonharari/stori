@@ -1,4 +1,4 @@
-package stori
+package main
 
 import (
 	"log"

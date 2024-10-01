@@ -22,6 +22,7 @@ func TestReadFile(t *testing.T) {
 		{
 			name: "valid file",
 			content: [][]string{
+				{"Id", "Date", "Transaction"},
 				{"0", "7/15", "60.50"},
 				{"1", "7/28", "-10.3"},
 				{"2", "8/2", "-20.46"},
@@ -44,14 +45,24 @@ func TestReadFile(t *testing.T) {
 		{
 			name: "invalid id",
 			content: [][]string{
+				{"Id", "Date", "Transaction"},
 				{"", "12/28", "100.50"},
 			},
 			expected:    nil,
 			expectError: domain.ErrorInvalidID,
 		},
 		{
+			name: "invalid date header",
+			content: [][]string{
+				{"a", "b", "c"},
+			},
+			expected:    nil,
+			expectError: domain.ErrorInvalidHeader,
+		},
+		{
 			name: "invalid date format",
 			content: [][]string{
+				{"Id", "Date", "Transaction"},
 				{"1", "invalid-date", "100.50"},
 			},
 			expected:    nil,
@@ -60,6 +71,7 @@ func TestReadFile(t *testing.T) {
 		{
 			name: "invalid amount format",
 			content: [][]string{
+				{"Id", "Date", "Transaction"},
 				{"1", "12/28", "invalid-amount"},
 			},
 			expected:    nil,

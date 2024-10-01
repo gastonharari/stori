@@ -5,12 +5,17 @@ import (
 	"time"
 )
 
-const DateFormat = "1/2"
+const (
+	DateFormat        = "1/2"
+	HeaderID          = "Id"
+	HeaderDate        = "Date"
+	HeaderTransaction = "Transaction"
+)
 
 type TransactionDAO struct {
-	ID     string    `json:"id"`
-	Date   time.Time `json:"date"`
-	Amount float64   `json:"transaction"`
+	ID     string
+	Date   time.Time
+	Amount float64
 }
 
 func (d TransactionDAO) ToDomain() domain.Transaction {
