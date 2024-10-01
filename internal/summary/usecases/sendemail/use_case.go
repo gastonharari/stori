@@ -1,8 +1,11 @@
 package sendemail
 
 type UseCase struct {
+	Service Service
 }
 
-func NewUseCase() UseCase {
-	return UseCase{}
+func NewUseCase(service Service) UseCase {
+	return UseCase{
+		Service: service,
+	}
 }

@@ -14,17 +14,17 @@ type SendEmailUC struct {
 	mock.Mock
 }
 
-// Exec provides a mock function with given fields: ctx, summary
-func (_m *SendEmailUC) Exec(ctx context.Context, summary domain.Summary) error {
-	ret := _m.Called(ctx, summary)
+// Exec provides a mock function with given fields: ctx, summary, userEmail
+func (_m *SendEmailUC) Exec(ctx context.Context, summary domain.Summary, userEmail string) error {
+	ret := _m.Called(ctx, summary, userEmail)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Exec")
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, domain.Summary) error); ok {
-		r0 = rf(ctx, summary)
+	if rf, ok := ret.Get(0).(func(context.Context, domain.Summary, string) error); ok {
+		r0 = rf(ctx, summary, userEmail)
 	} else {
 		r0 = ret.Error(0)
 	}

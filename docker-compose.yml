@@ -1,0 +1,13 @@
+services:
+  processtransactions:
+    build: .
+    image: processtransactions
+    container_name: processtransactions
+    volumes:
+      - ./:/data    
+    stdin_open: true
+    tty: true
+    env_file:
+      - .env  
+    working_dir: /root/
+    entrypoint: ["/root/processtransactions"]
