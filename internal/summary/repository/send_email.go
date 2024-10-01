@@ -16,7 +16,6 @@ func (r Repository) SendEmail(ctx context.Context, email domain.EmailData) error
 
 	message := mail.NewSingleEmail(from, email.Subject, to, email.PlainTextContent, email.HTMLContent)
 
-	//client := sendgrid.NewSendClient("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")
 	response, err := r.EmailClient.Send(message)
 	if err != nil {
 		return err
