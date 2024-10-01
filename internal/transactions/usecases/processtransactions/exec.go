@@ -4,7 +4,7 @@ import (
 	"context"
 )
 
-func (uc UseCase) Exec(ctx context.Context, path string) error {
+func (uc UseCase) Exec(ctx context.Context, path string, userEmail string) error {
 	transactions, err := uc.Service.ReadFile(ctx, path)
 	if err != nil {
 		return err
@@ -12,7 +12,7 @@ func (uc UseCase) Exec(ctx context.Context, path string) error {
 
 	summary := uc.CreateSummaryUC.Exec(ctx, transactions)
 
-	err = uc.SendEmailUC.Exec(ctx, summary)
+	err = uc.SendEmailUC.Exec(ctx, summary, userEmail)
 	if err != nil {
 		return err
 	}

@@ -7,8 +7,8 @@ import (
 )
 
 //go:generate mockery --name=Service --output=./mocks --structname=Service --filename=service.go
-//go:generate mockery --name=CreateSummaryUC --output=./mocks --structname=CreateSummaryUC --filename=createsummaryuc.go
-//go:generate mockery --name=SendEmailUC --output=./mocks --structname=SendEmailUC --filename=sendemailuc.go
+//go:generate mockery --name=CreateSummaryUC --output=./mocks --structname=CreateSummaryUC --filename=create_summary.go
+//go:generate mockery --name=SendEmailUC --output=./mocks --structname=SendEmailUC --filename=send_email.go
 
 type Service interface {
 	ReadFile(ctx context.Context, path string) ([]dmntransactions.Transaction, error)
@@ -19,5 +19,5 @@ type CreateSummaryUC interface {
 }
 
 type SendEmailUC interface {
-	Exec(ctx context.Context, summary dmnsummary.Summary) error
+	Exec(ctx context.Context, summary dmnsummary.Summary, userEmail string) error
 }

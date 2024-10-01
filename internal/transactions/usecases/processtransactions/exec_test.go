@@ -13,6 +13,7 @@ import (
 func TestExec_Success(t *testing.T) {
 	tw := newTestWrapper(t)
 	path := "testdata/transactions.csv"
+	userEmail := "test@email.com"
 
 	mockTransactions := []dmntransactions.Transaction{
 		{ID: "0", Date: time.Date(0, 7, 15, 0, 0, 0, 0, time.UTC), Amount: 60.50},
@@ -38,9 +39,9 @@ func TestExec_Success(t *testing.T) {
 
 	tw.mockService.On("ReadFile", tw.ctx, path).Return(mockTransactions, nil)
 	tw.mockCreateSummaryUC.On("Exec", tw.ctx, mockTransactions).Return(mockSummary)
-	tw.mockSendEmailUC.On("Exec", tw.ctx, mockSummary).Return(nil)
+	tw.mockSendEmailUC.On("Exec", tw.ctx, mockSummary, userEmail).Return(nil)
 
-	err := tw.uc.Exec(tw.ctx, path)
+	err := tw.uc.Exec(tw.ctx, path, userEmail)
 
 	assert.NoError(t, err)
 	tw.mockService.AssertExpectations(t)
@@ -51,11 +52,13 @@ func TestExec_Success(t *testing.T) {
 func TestExec_ReadFileError(t *testing.T) {
 	tw := newTestWrapper(t)
 	path := "testdata/transactions.csv"
+	userEmail := "test@email.com"
+
 	expectedError := errors.New("read file error")
 
 	tw.mockService.On("ReadFile", tw.ctx, path).Return(nil, expectedError)
 
-	err := tw.uc.Exec(tw.ctx, path)
+	err := tw.uc.Exec(tw.ctx, path, userEmail)
 	assert.Error(t, err)
 	assert.Equal(t, expectedError, err)
 	tw.mockService.AssertExpectations(t)
@@ -64,6 +67,8 @@ func TestExec_ReadFileError(t *testing.T) {
 func TestExec_SendEmailError(t *testing.T) {
 	tw := newTestWrapper(t)
 	path := "testdata/transactions.csv"
+	userEmail := "test@email.com"
+
 	transactions := []dmntransactions.Transaction{
 		{ID: "0", Date: time.Date(2023, 7, 15, 0, 0, 0, 0, time.UTC), Amount: 60.50},
 		{ID: "1", Date: time.Date(2023, 7, 28, 0, 0, 0, 0, time.UTC), Amount: -10.3},
@@ -89,9 +94,9 @@ func TestExec_SendEmailError(t *testing.T) {
 
 	tw.mockService.On("ReadFile", tw.ctx, path).Return(transactions, nil)
 	tw.mockCreateSummaryUC.On("Exec", tw.ctx, transactions).Return(expectedSummary)
-	tw.mockSendEmailUC.On("Exec", tw.ctx, expectedSummary).Return(expectedError)
+	tw.mockSendEmailUC.On("Exec", tw.ctx, expectedSummary, userEmail).Return(expectedError)
 
-	err := tw.uc.Exec(tw.ctx, path)
+	err := tw.uc.Exec(tw.ctx, path, userEmail)
 	assert.Error(t, err)
 	assert.Equal(t, expectedError, err)
 	tw.mockService.AssertExpectations(t)
