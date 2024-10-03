@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"log"
+	"stori/cmd/processfiletransactions/dtos"
 )
 
 func (h handler) Handle() error {
@@ -14,17 +15,18 @@ func (h handler) Handle() error {
 	flag.Parse()
 
 	if *path == "" {
-		log.Fatal("Please provide a valid path to the CSV file using the --file flag.")
+		return dtos.ErrMissingFile
 	}
 
 	if *email == "" {
-		log.Fatal("Please provide a valid email address using the --email flag.")
+		return dtos.ErrMissingEmail
 	}
 	log.Println("Starting transaction processing...")
 
 	err := h.UC.Exec(ctx, *path, *email)
 	if err != nil {
-		log.Fatalf("Error processing transactions: %v", err)
+		log.Printf("Error processing transactions: %v", err)
+		return err
 	}
 
 	log.Println("Transaction processing completed successfully.")
