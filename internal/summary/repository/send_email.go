@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"errors"
 	"log"
 	"net/http"
 	"stori/internal/summary/domain"
@@ -24,7 +23,7 @@ func (r Repository) SendEmail(ctx context.Context, email domain.EmailData) error
 	if response.StatusCode != http.StatusAccepted {
 		log.Printf("Error sending email: %v", response.Body)
 		log.Printf("Response code: %v", response.StatusCode)
-		return errors.Join(domain.ErrEmailInvaLIdResponseCode)
+		return domain.ErrEmailInvalidResponseCode
 	}
 
 	return nil
