@@ -1,4 +1,5 @@
 # stori
+![Workflow Status](https://github.com/gastonharari/stori/actions/workflows/main.yml/badge.svg)
 
 To run the project, run this following commands:
 ```bash
