@@ -1,7 +1,10 @@
 package processfiletransactions
 
-import "context"
+import (
+	"context"
+	"stori/internal/transactions/domain"
+)
 
 type ProcesstransactionsUC interface {
-	Exec(ctx context.Context, path string, userEmail string) error
+	Exec(ctx context.Context, userEmail string, transactions []domain.Transaction) error
 }

@@ -14,34 +14,22 @@ type Service struct {
 	mock.Mock
 }
 
-// ReadFile provides a mock function with given fields: ctx, path
-func (_m *Service) ReadFile(ctx context.Context, path string) ([]domain.Transaction, error) {
-	ret := _m.Called(ctx, path)
+// Create provides a mock function with given fields: ctx, transactions
+func (_m *Service) Create(ctx context.Context, transactions []domain.Transaction) error {
+	ret := _m.Called(ctx, transactions)
 
 	if len(ret) == 0 {
-		panic("no return value specified for ReadFile")
+		panic("no return value specified for Create")
 	}
 
-	var r0 []domain.Transaction
-	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string) ([]domain.Transaction, error)); ok {
-		return rf(ctx, path)
-	}
-	if rf, ok := ret.Get(0).(func(context.Context, string) []domain.Transaction); ok {
-		r0 = rf(ctx, path)
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, []domain.Transaction) error); ok {
+		r0 = rf(ctx, transactions)
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]domain.Transaction)
-		}
+		r0 = ret.Error(0)
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
-		r1 = rf(ctx, path)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
+	return r0
 }
 
 // NewService creates a new instance of Service. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

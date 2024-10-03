@@ -1,7 +1,6 @@
 package processtransactions
 
 import (
-	"errors"
 	"stori/internal/summary/domain"
 	dmntransactions "stori/internal/transactions/domain"
 	"testing"
@@ -12,10 +11,9 @@ import (
 
 func TestExec_Success(t *testing.T) {
 	tw := newTestWrapper(t)
-	path := "testdata/transactions.csv"
 	userEmail := "test@email.com"
 
-	mockTransactions := []dmntransactions.Transaction{
+	transactions := []dmntransactions.Transaction{
 		{ID: "0", Date: time.Date(0, 7, 15, 0, 0, 0, 0, time.UTC), Amount: 60.50},
 		{ID: "1", Date: time.Date(0, 7, 28, 0, 0, 0, 0, time.UTC), Amount: -10.3},
 	}
@@ -37,11 +35,11 @@ func TestExec_Success(t *testing.T) {
 		},
 	}
 
-	tw.mockService.On("ReadFile", tw.ctx, path).Return(mockTransactions, nil)
-	tw.mockCreateSummaryUC.On("Exec", tw.ctx, mockTransactions).Return(mockSummary)
+	tw.mockService.On("Create", tw.ctx, transactions).Return(nil)
+	tw.mockCreateSummaryUC.On("Exec", tw.ctx, transactions).Return(mockSummary)
 	tw.mockSendEmailUC.On("Exec", tw.ctx, mockSummary, userEmail).Return(nil)
 
-	err := tw.uc.Exec(tw.ctx, path, userEmail)
+	err := tw.uc.Exec(tw.ctx, userEmail, transactions)
 
 	assert.NoError(t, err)
 	tw.mockService.AssertExpectations(t)
@@ -49,24 +47,24 @@ func TestExec_Success(t *testing.T) {
 	tw.mockSendEmailUC.AssertExpectations(t)
 }
 
-func TestExec_ReadFileError(t *testing.T) {
+func TestExec_Createrror(t *testing.T) {
 	tw := newTestWrapper(t)
-	path := "testdata/transactions.csv"
 	userEmail := "test@email.com"
+	transactions := []dmntransactions.Transaction{
+		{ID: "0", Date: time.Date(0, 7, 15, 0, 0, 0, 0, time.UTC), Amount: 60.50},
+		{ID: "1", Date: time.Date(0, 7, 28, 0, 0, 0, 0, time.UTC), Amount: -10.3},
+	}
 
-	expectedError := errors.New("read file error")
+	tw.mockService.On("Create", tw.ctx, transactions).Return(assert.AnError)
 
-	tw.mockService.On("ReadFile", tw.ctx, path).Return(nil, expectedError)
-
-	err := tw.uc.Exec(tw.ctx, path, userEmail)
+	err := tw.uc.Exec(tw.ctx, userEmail, transactions)
 	assert.Error(t, err)
-	assert.Equal(t, expectedError, err)
+	assert.Equal(t, assert.AnError, err)
 	tw.mockService.AssertExpectations(t)
 }
 
 func TestExec_SendEmailError(t *testing.T) {
 	tw := newTestWrapper(t)
-	path := "testdata/transactions.csv"
 	userEmail := "test@email.com"
 
 	transactions := []dmntransactions.Transaction{
@@ -90,15 +88,14 @@ func TestExec_SendEmailError(t *testing.T) {
 			},
 		},
 	}
-	expectedError := errors.New("send email error")
 
-	tw.mockService.On("ReadFile", tw.ctx, path).Return(transactions, nil)
+	tw.mockService.On("Create", tw.ctx, transactions).Return(nil)
 	tw.mockCreateSummaryUC.On("Exec", tw.ctx, transactions).Return(expectedSummary)
-	tw.mockSendEmailUC.On("Exec", tw.ctx, expectedSummary, userEmail).Return(expectedError)
+	tw.mockSendEmailUC.On("Exec", tw.ctx, expectedSummary, userEmail).Return(assert.AnError)
 
-	err := tw.uc.Exec(tw.ctx, path, userEmail)
+	err := tw.uc.Exec(tw.ctx, userEmail, transactions)
 	assert.Error(t, err)
-	assert.Equal(t, expectedError, err)
+	assert.Equal(t, assert.AnError, err)
 	tw.mockService.AssertExpectations(t)
 	tw.mockCreateSummaryUC.AssertExpectations(t)
 	tw.mockSendEmailUC.AssertExpectations(t)

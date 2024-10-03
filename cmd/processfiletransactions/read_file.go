@@ -1,4 +1,4 @@
-package repository
+package processfiletransactions
 
 import (
 	"context"
@@ -8,12 +8,12 @@ import (
 	"strconv"
 	"time"
 
+	"stori/cmd/processfiletransactions/dtos"
 	"stori/internal/transactions/domain"
-	"stori/internal/transactions/repository/daos"
 	"stori/pkg/structs"
 )
 
-func (r Repository) ReadFile(ctx context.Context, filename string) ([]domain.Transaction, error) {
+func ReadFile(ctx context.Context, filename string) ([]domain.Transaction, error) {
 	file, err := os.Open(filename)
 	if err != nil {
 		return nil, errors.Join(domain.ErrorFileNotFound, err)
@@ -25,7 +25,7 @@ func (r Repository) ReadFile(ctx context.Context, filename string) ([]domain.Tra
 	if err != nil {
 		return nil, err
 	}
-	if header[0] != daos.HeaderID || header[1] != daos.HeaderDate || header[2] != daos.HeaderTransaction {
+	if header[0] != dtos.HeaderID || header[1] != dtos.HeaderDate || header[2] != dtos.HeaderTransaction {
 		return nil, domain.ErrorInvalidHeader
 	}
 	records, err := reader.ReadAll()
@@ -33,14 +33,14 @@ func (r Repository) ReadFile(ctx context.Context, filename string) ([]domain.Tra
 		return nil, err
 	}
 
-	var transactions []daos.TransactionDAO
+	var transactions []dtos.TransactionDTO
 	for _, record := range records {
 		id := record[0]
 		if id == "" {
 			return nil, domain.ErrorInvalidID
 		}
 
-		date, err := time.Parse(daos.DateFormat, record[1])
+		date, err := time.Parse(dtos.DateFormat, record[1])
 		if err != nil {
 			return nil, errors.Join(domain.ErrorInvalidDate, err)
 		}
@@ -50,12 +50,12 @@ func (r Repository) ReadFile(ctx context.Context, filename string) ([]domain.Tra
 			return nil, errors.Join(domain.ErrorInvalidAmount, err)
 		}
 
-		transactions = append(transactions, daos.TransactionDAO{
+		transactions = append(transactions, dtos.TransactionDTO{
 			ID:     id,
 			Date:   date,
 			Amount: amount,
 		})
 	}
 
-	return structs.Map(transactions, daos.TransactionDAO.ToDomain), nil
+	return structs.Map(transactions, dtos.TransactionDTO.ToDomain), nil
 }

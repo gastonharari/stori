@@ -2,10 +2,11 @@ package processtransactions
 
 import (
 	"context"
+	"stori/internal/transactions/domain"
 )
 
-func (uc UseCase) Exec(ctx context.Context, path string, userEmail string) error {
-	transactions, err := uc.Service.ReadFile(ctx, path)
+func (uc UseCase) Exec(ctx context.Context, userEmail string, transactions []domain.Transaction) error {
+	err := uc.Service.Create(ctx, transactions)
 	if err != nil {
 		return err
 	}

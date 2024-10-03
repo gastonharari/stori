@@ -1,6 +1,7 @@
-package repository
+package processfiletransactions
 
 import (
+	"context"
 	"encoding/csv"
 	"os"
 	"testing"
@@ -12,7 +13,6 @@ import (
 )
 
 func TestReadFile(t *testing.T) {
-	tw := newTestWrapper()
 	tests := []struct {
 		name        string
 		content     [][]string
@@ -89,7 +89,7 @@ func TestReadFile(t *testing.T) {
 				filename = "nonexistentfile.csv"
 			}
 
-			result, err := tw.repository.ReadFile(tw.ctx, filename)
+			result, err := ReadFile(context.Background(), filename)
 
 			if tt.expectError != nil {
 				assert.Error(t, err)
@@ -102,7 +102,7 @@ func TestReadFile(t *testing.T) {
 	}
 }
 
-func mockCSV(t *testing.T, content [][]string) string {
+func csvMock(t *testing.T, content [][]string) string {
 	file, err := os.CreateTemp("", "testfile-*.csv")
 	if err != nil {
 		t.Fatalf("failed to create temp file: %v", err)

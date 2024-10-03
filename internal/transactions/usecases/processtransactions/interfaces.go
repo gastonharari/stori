@@ -11,7 +11,7 @@ import (
 //go:generate mockery --name=SendEmailUC --output=./mocks --structname=SendEmailUC --filename=send_email.go
 
 type Service interface {
-	ReadFile(ctx context.Context, path string) ([]dmntransactions.Transaction, error)
+	Create(ctx context.Context, transactions []dmntransactions.Transaction) error
 }
 
 type CreateSummaryUC interface {
