@@ -1,4 +1,4 @@
-package daos
+package dtos
 
 import (
 	"stori/internal/transactions/domain"
@@ -12,13 +12,13 @@ const (
 	HeaderTransaction = "Transaction"
 )
 
-type TransactionDAO struct {
+type TransactionDTO struct {
 	ID     string
 	Date   time.Time
 	Amount float64
 }
 
-func (d TransactionDAO) ToDomain() domain.Transaction {
+func (d TransactionDTO) ToDomain() domain.Transaction {
 	return domain.Transaction{
 		ID:     d.ID,
 		Date:   d.Date,

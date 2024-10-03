@@ -23,7 +23,13 @@ func (h handler) Handle() error {
 	}
 	log.Println("Starting transaction processing...")
 
-	err := h.UC.Exec(ctx, *path, *email)
+	transactions, err := ReadFile(ctx, *path)
+	if err != nil {
+		log.Printf("Error reading file: %v", err)
+		return err
+	}
+
+	err = h.UC.Exec(ctx, *email, transactions)
 	if err != nil {
 		log.Printf("Error processing transactions: %v", err)
 		return err

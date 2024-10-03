@@ -6,5 +6,5 @@ import (
 )
 
 type Repository interface {
-	ReadFile(ctx context.Context, path string) ([]domain.Transaction, error)
+	Create(ctx context.Context, transactions []domain.Transaction) error
 }

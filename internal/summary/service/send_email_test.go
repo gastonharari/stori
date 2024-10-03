@@ -26,14 +26,6 @@ func TestSendEmail_Success(t *testing.T) {
 				CountDebit:       1,
 				TransactionCount: 2,
 			},
-			"August": {
-				Month:            "August",
-				AverageCredit:    10,
-				AverageDebit:     -20.46,
-				CountCredit:      1,
-				CountDebit:       1,
-				TransactionCount: 2,
-			},
 		},
 	}
 	userEmail := "test@email.com"
@@ -66,14 +58,6 @@ func TestSendEmail_Error(t *testing.T) {
 				Month:            "July",
 				AverageCredit:    60.5,
 				AverageDebit:     -10.3,
-				CountCredit:      1,
-				CountDebit:       1,
-				TransactionCount: 2,
-			},
-			"August": {
-				Month:            "August",
-				AverageCredit:    10,
-				AverageDebit:     -20.46,
 				CountCredit:      1,
 				CountDebit:       1,
 				TransactionCount: 2,
@@ -113,10 +97,27 @@ func TestGeneratePlainTextContent(t *testing.T) {
 				CountDebit:       1,
 				TransactionCount: 2,
 			},
-			"August": {
-				Month:            "August",
-				AverageCredit:    10,
-				AverageDebit:     -20.46,
+		},
+	}
+
+	expectedText := "Total balance is: 39.74\nNumber of transactions in July: 2\nAverage debit amount: -15.38\nAverage credit amount: 35.25\n"
+
+	plainTextContent := generatePlainTextContent(summary)
+	assert.Equal(t, expectedText, plainTextContent)
+}
+
+func TestGenerateHTMLContent(t *testing.T) {
+	summary := domain.Summary{
+		TotalBalance:     39.74,
+		AverageCredit:    35.25,
+		AverageDebit:     -15.38,
+		TotalDebitCount:  2,
+		TotalCreditCount: 2,
+		MonthlySummary: map[string]domain.MonthSummary{
+			"July": {
+				Month:            "July",
+				AverageCredit:    60.5,
+				AverageDebit:     -10.3,
 				CountCredit:      1,
 				CountDebit:       1,
 				TransactionCount: 2,
@@ -124,13 +125,8 @@ func TestGeneratePlainTextContent(t *testing.T) {
 		},
 	}
 
-	expectedText := `Total balance is: 39.74
-Number of transactions in July: 2
-Number of transactions in August: 2
-Average debit amount: -15.38
-Average credit amount: 35.25
-`
+	expectedHTML := "\n        <html>\n        <body style=\"background-color: #004034; font-family: Arial, sans-serif; margin: 0; padding: 0; color: #FFFFFF;\">\n            <div style=\"width: 100%; max-width: 600px; margin: 0 auto; padding: 20px; text-align: center; background-color: #FFFFFF; color: #004034; border-radius: 10px;\">\n                <img src=\"https://drive.google.com/uc?export=view&id=1R8xYbhWBji1k4V8ArTb667EKJyDJn99J\" alt=\"Stori Logo\" style=\"width: 150px; margin-bottom: 20px;\" />\n                <div style=\"padding: 20px;\">\n                    <h2 style=\"color: #00F08C;\">Monthly Summary</h2>\n                    <p><strong>Total balance is: 39.74</strong></p>\n                    <p><strong>Average debit amount:</strong> -15.38</p>\n                    <p><strong>Average credit amount:</strong> 35.25</p><p>Number of transactions in July: 2</p>\n                </div>\n            </div>\n        </body>\n        </html>"
 
-	plainTextContent := generatePlainTextContent(summary)
-	assert.Equal(t, expectedText, plainTextContent)
+	htmlContent := generateHTMLContent(summary)
+	assert.Equal(t, expectedHTML, htmlContent)
 }
